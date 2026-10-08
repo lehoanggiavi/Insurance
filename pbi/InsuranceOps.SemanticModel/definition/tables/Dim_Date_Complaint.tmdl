@@ -1,0 +1,83 @@
+/// Bảng ngày cho VAI TRÒ ngày complaint (active) / hoàn thành (inactive). Phạm vi 08/07/2011–14/05/2020 lấy từ ngày hợp lệ thực có trong complaints_curated.csv (ComplainDate__iso và CompletionDate__iso). Đây là bảng ngày ACTIVE của model (quan hệ tới nó isActive).
+table Dim_Date_Complaint
+	lineageTag: d833cf7f-6fa3-41df-be4c-55f571fda57f
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: 4042da82-1ac1-4d95-a257-81576e7c8fac
+		dataCategory: Time
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: #,0
+		lineageTag: 531a80fd-4505-415e-8148-34dc282afe3e
+		summarizeBy: none
+		sourceColumn: Year
+
+	column YearMonth
+		dataType: string
+		lineageTag: ae89e139-8591-4ca0-a07f-d7d9213e4c07
+		summarizeBy: none
+		sourceColumn: YearMonth
+
+	column Quarter
+		dataType: string
+		lineageTag: b61c843c-c3e9-409e-8a9f-26dd928ff241
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column MonthNum
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 91d8e029-9dad-43ed-a481-8814f4e734b6
+		summarizeBy: none
+		sourceColumn: MonthNum
+
+	column MonthName
+		dataType: string
+		lineageTag: d1f5d857-1ac5-447b-baf5-9a08e98bc013
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthNum
+
+	column DayOfWeek
+		dataType: string
+		lineageTag: a031dfb8-55be-42da-b65a-a78f0e430bbb
+		summarizeBy: none
+		sourceColumn: DayOfWeek
+		sortByColumn: DayOfWeekNum
+
+	column DayOfWeekNum
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 7f9c34b2-55b6-41e4-a4ba-1eb8fb6ed734
+		summarizeBy: none
+		sourceColumn: DayOfWeekNum
+
+	partition Dim_Date_Complaint = m
+		mode: import
+		source =
+				let
+				    NgayDau = #date(2011, 7, 8),
+				    NgayCuoi = #date(2020, 5, 14),
+				    DanhSachNgay = List.Dates(NgayDau, Duration.Days(NgayCuoi - NgayDau) + 1, #duration(1, 0, 0, 0)),
+				    Raw = Table.TransformColumnTypes(Table.FromList(DanhSachNgay, Splitter.SplitByNothing(), {"Date"}), {{"Date", type date}}),
+				    CoNam = Table.AddColumn(Raw, "Year", each Date.Year([Date]), Int64.Type),
+				    CoThang = Table.AddColumn(CoNam, "MonthNum", each Date.Month([Date]), Int64.Type),
+				    CoNamThang = Table.AddColumn(CoThang, "YearMonth", each Date.ToText([Date], "yyyy-MM"), type text),
+				    CoQuy = Table.AddColumn(CoNamThang, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    CoTenThang = Table.AddColumn(CoQuy, "MonthName", each Date.ToText([Date], "MMM", "en-US"), type text),
+				    CoThu = Table.AddColumn(CoTenThang, "DayOfWeek", each Date.ToText([Date], "ddd", "en-US"), type text),
+				    CoSoThu = Table.AddColumn(CoThu, "DayOfWeekNum", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type)
+				in
+				    CoSoThu
+

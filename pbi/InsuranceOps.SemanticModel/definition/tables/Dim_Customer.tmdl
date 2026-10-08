@@ -1,0 +1,118 @@
+/// Dimension khách hàng. Grain = 1 dòng / 1 CustomerID. Không có FirstName/LastName (projection; không cần cho tính chỉ số).
+table Dim_Customer
+	lineageTag: 3041e7ca-2043-4559-81db-2cddcdce01a0
+
+	column CustomerID
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 367f2c2a-3159-46e5-8cab-b3ae709e0530
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+	column CustomerID__source
+		dataType: string
+		isHidden
+		lineageTag: e8a561b6-d6b3-4a27-b932-37caf47c53ea
+		summarizeBy: none
+		sourceColumn: CustomerID__source
+
+	column Gender
+		dataType: string
+		lineageTag: 373899f3-8a03-4b01-9c44-553b3e6b8350
+		summarizeBy: none
+		sourceColumn: Gender
+
+	column ParticipantType
+		dataType: string
+		lineageTag: 1377ed76-14db-4e34-bccb-f9fbf74ce4bb
+		summarizeBy: none
+		sourceColumn: ParticipantType
+
+	column RegionID
+		dataType: int64
+		formatString: #,0
+		lineageTag: 142351de-da84-4f1f-bb24-803febef4d20
+		summarizeBy: none
+		sourceColumn: RegionID
+
+	column MaritalStatus
+		dataType: string
+		lineageTag: fbe7f773-a9e4-4e7c-877c-2d309cba0153
+		summarizeBy: none
+		sourceColumn: MaritalStatus
+
+	column BirthDate__iso
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 796a6ce8-2fde-4c8d-bf2e-1ab2a6fad441
+		summarizeBy: none
+		sourceColumn: BirthDate__iso
+
+		variation Variation
+			isDefault
+			relationship: 6546f24c-f9c5-4af9-af28-dfe002568bb7
+			defaultHierarchy: LocalDateTable_a888673f-e8f9-4cef-8d63-eb7c13fc6d57.'Phân cấp ngày tháng'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column BirthYear
+		dataType: string
+		lineageTag: 89daba82-d34b-4fdd-bb10-1dff4a133729
+		summarizeBy: none
+		sourceColumn: BirthYear
+
+	column BirthDate__source_is_datetime
+		dataType: boolean
+		isHidden
+		lineageTag: 6b2a5185-4941-469e-b9bf-e754590b5818
+		summarizeBy: none
+		sourceColumn: BirthDate__source_is_datetime
+
+	column birthdate_null_flag
+		dataType: boolean
+		lineageTag: 17d07576-cc44-4283-88fa-927f0a2b1162
+		summarizeBy: none
+		sourceColumn: birthdate_null_flag
+
+	column quality_flags
+		dataType: string
+		lineageTag: d73c7501-4158-43b8-bfc8-b8f2262aea9f
+		summarizeBy: none
+		sourceColumn: quality_flags
+
+	column _source_row
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 503881c7-1bb1-4f21-a29a-161af93a38be
+		summarizeBy: sum
+		sourceColumn: _source_row
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Customer = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\customers_curated.csv"), [Delimiter = ",", Columns = 12, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"RegionID", "BirthDate__iso", "_source_row"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"CustomerID", Int64.Type},
+					        {"CustomerID__source", type text},
+					        {"Gender", type text},
+					        {"ParticipantType", type text},
+					        {"RegionID", Int64.Type},
+					        {"MaritalStatus", type text},
+					        {"BirthDate__iso", type date},
+					        {"BirthYear", type text},
+					        {"BirthDate__source_is_datetime", type logical},
+					        {"birthdate_null_flag", type logical},
+					        {"quality_flags", type text},
+					        {"_source_row", Int64.Type}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"CustomerID", Order.Ascending})
+				in
+				    Sorted
+

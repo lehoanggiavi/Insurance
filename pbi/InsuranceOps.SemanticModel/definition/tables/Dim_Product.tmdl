@@ -1,0 +1,64 @@
+/// Dimension sản phẩm. Grain = 1 dòng / 1 ProductID.
+table Dim_Product
+	lineageTag: 88ffe6b2-5597-44f3-b5cd-d759a0ad631b
+
+	column ProductID
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 9a3cf9d8-fc99-4bae-a023-b83c1948b268
+		summarizeBy: none
+		sourceColumn: ProductID
+
+	column ProductID__source
+		dataType: string
+		isHidden
+		lineageTag: 008ea78f-f3bd-4eb6-96e7-e4dd5b9a7bb1
+		summarizeBy: none
+		sourceColumn: ProductID__source
+
+	column ProductID__int
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 2f62bdcc-6aba-48e4-8627-383be3a47fa7
+		summarizeBy: none
+		sourceColumn: ProductID__int
+
+	column ProductCategory
+		dataType: string
+		lineageTag: a382b63f-473e-44b5-a62b-0a3bdb8e417d
+		summarizeBy: none
+		sourceColumn: ProductCategory
+
+	column ProductSubCategory
+		dataType: string
+		lineageTag: dec971c8-0d0b-4120-9982-a1de2e211cd8
+		summarizeBy: none
+		sourceColumn: ProductSubCategory
+
+	column Product
+		dataType: string
+		lineageTag: 7ed88ac3-9e4a-4293-b62d-cc4f0592cbd9
+		summarizeBy: none
+		sourceColumn: Product
+
+	partition Dim_Product = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\products_curated.csv"), [Delimiter = ",", Columns = 6, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"ProductID__int"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"ProductID", Int64.Type},
+					        {"ProductID__source", type text},
+					        {"ProductID__int", Int64.Type},
+					        {"ProductCategory", type text},
+					        {"ProductSubCategory", type text},
+					        {"Product", type text}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"ProductID", Order.Ascending})
+				in
+				    Sorted
+

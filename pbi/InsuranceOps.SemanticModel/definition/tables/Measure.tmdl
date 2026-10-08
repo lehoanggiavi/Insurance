@@ -1,0 +1,146 @@
+/// Bang hien thi chua 22 chi so DAX. KHONG co relationship; chi dung de chua measure va nhom folder hien thi.
+table Measure
+	lineageTag: 2fefd09c-004a-49de-9fe2-dfd93323da6e
+
+	/// So khieu nai, dem DISTINCT ComplaintID trong Fact_Complaint. KHONG dem dong history. COALESCE de cohort rong tra 0. Ngay tieu chuan: ngay tiep nhan.
+	measure 'Total Complaints' = COALESCE(DISTINCTCOUNT(Fact_Complaint[ComplaintID]), 0)
+		formatString: #,0
+		displayFolder: Complaints
+		lineageTag: 57cc02ff-57a3-4dd2-bb0b-06ed6260d034
+
+	/// Khieu nai co CompletionDate khac rong. COALESCE de cohort rong tra 0. Ngay tieu chuan: ngay tiep nhan, khong suy tu nhan CLOSED.
+	measure 'Completed Complaints' = COALESCE(CALCULATE([Total Complaints], FILTER(Fact_Complaint, NOT ISBLANK(Fact_Complaint[CompletionDate__iso]))), 0)
+		formatString: #,0
+		displayFolder: Complaints
+		lineageTag: 6360ebee-3fbd-4b82-b8a0-09e266c8c17d
+
+	/// Khieu nai chua co CompletionDate = Total - Completed. KHONG goi la backlog lich su.
+	measure 'Uncompleted Complaints' = [Total Complaints] - [Completed Complaints]
+		formatString: #,0
+		displayFolder: Complaints
+		lineageTag: a1e8bf74-d968-4fcc-8519-2263a028a2ee
+
+	/// Khieu nai muc uu tien Urgent, Dim_Priority.ID = 1 da kiem o lookup. Giu KEEPFILTERS; cohort rong tra 0.
+	measure 'Urgent Complaints' = COALESCE(CALCULATE([Total Complaints], KEEPFILTERS(Dim_Priority[ID] = 1)), 0)
+		formatString: #,0
+		displayFolder: Complaints
+		lineageTag: ae5afc34-1ac2-4ed2-be7f-3096b98dcc88
+
+	/// Ti le Urgent trong cohort dang loc. Mau so: Total Complaints cung context; mau so rong tra BLANK.
+	measure 'Urgent Rate' = DIVIDE([Urgent Complaints], [Total Complaints])
+		formatString: 0.00%
+		displayFolder: Complaints
+		lineageTag: b129f0d9-0bed-411f-981d-fc0b68930261
+
+	/// Trung binh processing_days = CompletionDate - ComplainDate cua khieu nai da hoan thanh. AVERAGE bo qua BLANK nen 50 dong chua hoan thanh khong vao mau so; giu gia tri 0 ngay. KHONG phai time-in-status.
+	measure 'Average Processing Days' = AVERAGE(Fact_Complaint[processing_days])
+		formatString: #,0.00
+		displayFolder: Processing
+		lineageTag: 79ec3554-575f-4492-a289-4846e17b0921
+
+	/// Trung vi processing_days cung cohort da hoan thanh; MEDIAN bo qua BLANK. Khong co mau hop le tra BLANK.
+	measure 'Median Processing Days' = MEDIAN(Fact_Complaint[processing_days])
+		formatString: #,0.00
+		displayFolder: Processing
+		lineageTag: fb690066-80b9-4703-8dba-5a3e73dd956e
+
+	/// Khieu nai da hoan thanh, dem theo NGAY HOAN THANH thay cho ngay tiep nhan. REMOVEFILTERS bo duong loc ngay tiep nhan roi USERELATIONSHIP mo duong loc ngay hoan thanh tren quan he inactive. Cohort rong tra 0.
+	measure 'Completed by Completion Date' = COALESCE(CALCULATE([Completed Complaints], REMOVEFILTERS(Fact_Complaint[ComplainDate__iso]), USERELATIONSHIP(Fact_Complaint[CompletionDate__iso], Dim_Date_Complaint[Date])), 0)
+		formatString: #,0
+		displayFolder: Processing
+		lineageTag: 4ec6e0b5-32c7-49ce-9203-0762b66bef1d
+
+	/// Khieu nai duoc danh gia SAT. Giu KEEPFILTERS; cohort rong tra 0.
+	measure 'SAT Complaints' = COALESCE(CALCULATE([Total Complaints], KEEPFILTERS(Fact_Complaint[ClientSatisfaction] = "SAT")), 0)
+		formatString: #,0
+		displayFolder: Satisfaction
+		lineageTag: ba479462-fc8a-4a79-aedc-4a4dc1b44bfb
+
+	/// Khieu nai duoc danh gia NSA. Giu KEEPFILTERS; cohort rong tra 0.
+	measure 'NSA Complaints' = COALESCE(CALCULATE([Total Complaints], KEEPFILTERS(Fact_Complaint[ClientSatisfaction] = "NSA")), 0)
+		formatString: #,0
+		displayFolder: Satisfaction
+		lineageTag: b21916dd-9795-4b16-8808-27bd29d2d085
+
+	/// Khieu nai co danh gia thuc te = SAT + NSA. Mau so cho moi ti le danh gia.
+	measure 'Evaluated Complaints' = [SAT Complaints] + [NSA Complaints]
+		formatString: #,0
+		displayFolder: Satisfaction
+		lineageTag: 91a360b0-f50a-40d8-8b2e-705ae7d330bb
+
+	/// Khieu nai chua co danh gia = Total - Evaluated; gom N/A, null va gia tri khac.
+	measure 'Not Evaluated Complaints' = [Total Complaints] - [Evaluated Complaints]
+		formatString: #,0
+		displayFolder: Satisfaction
+		lineageTag: 3f4e5ef1-85b5-4f45-956a-64e6d4bd6177
+
+	/// Ti le SAT. Mau so: Evaluated Complaints, KHONG dung Total. Neu chi chon SAT thi day la 100% cua cohort dang loc. Mau so rong tra BLANK.
+	measure 'SAT Rate' = DIVIDE([SAT Complaints], [Evaluated Complaints])
+		formatString: 0.00%
+		displayFolder: Satisfaction
+		lineageTag: 23bffaf1-c107-42d4-8595-7772f6958b1b
+
+	/// Ti le NSA. Mau so: Evaluated Complaints. Mau so rong tra BLANK.
+	measure 'NSA Rate' = DIVIDE([NSA Complaints], [Evaluated Complaints])
+		formatString: 0.00%
+		displayFolder: Satisfaction
+		lineageTag: 1103518e-a73b-4b6d-b3b0-7c0505471b1f
+
+	/// Ty le duoc danh gia. Mau so: Total Complaints. Mau so rong tra BLANK.
+	measure 'Evaluation Coverage' = DIVIDE([Evaluated Complaints], [Total Complaints])
+		formatString: 0.00%
+		displayFolder: Satisfaction
+		lineageTag: 18dfddb6-4921-4bab-9228-c6827a7b6d53
+
+	/// So khach phat sinh khieu nai trong cohort dang loc, DISTINCT CustomerID tu Fact_Complaint, KHONG dem tu history. Cohort rong tra 0.
+	measure 'Customers with Complaints' = COALESCE(DISTINCTCOUNT(Fact_Complaint[CustomerID]), 0)
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: 7e097cae-fc05-4752-add3-a7de74b87145
+
+	/// So khach trong bang nguon Dim_Customer. Chiu filter dia ly/nhan khau o dimension; KHONG bi loc nguoc boi ngay khieu nai, san pham hay uu tien.
+	measure 'Source Customers' = COALESCE(COUNTROWS(Dim_Customer), 0)
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: 4fb4ed24-1872-41f8-9374-36dad560bf0c
+
+	/// Khieu nai tren 1000 khach trong bang nguon. Mau so: Source Customers, KHONG phai danh so duoc bao hiem; mau so khong co lai theo san pham hay ngay.
+	measure 'Complaints per 1000 Source Customers' = DIVIDE([Total Complaints], [Source Customers]) * 1000
+		formatString: #,0.00
+		displayFolder: Customers
+		lineageTag: 05b79949-8faf-4956-bcd6-d6a6b098a86e
+
+	/// So su kien trong Fact_StatusHistory. Loc ngay event chi loc history, khong tu doi tong khieu nai. Cohort rong tra 0.
+	measure 'Status Events' = COALESCE(COUNTROWS(Fact_StatusHistory), 0)
+		formatString: #,0
+		displayFolder: History
+		lineageTag: 64b52da0-40bb-4c9f-b1ac-0fb6ebe5d7aa
+
+	/// So khieu nai co it nhat mot event, DISTINCT ComplaintID tu Fact_StatusHistory. Cohort rong tra 0.
+	measure 'Complaints with History' = COALESCE(DISTINCTCOUNT(Fact_StatusHistory[ComplaintID]), 0)
+		formatString: #,0
+		displayFolder: History
+		lineageTag: 32e2f90d-6277-4a89-8fe7-7a6a61f4175a
+
+	/// Ti le khieu nai co event. Mau so: Total Complaints. Khi loc ngay event: so su kien TRONG ky do tren cohort complaint, KHONG chung minh du day journey.
+	measure 'History Presence Coverage' = DIVIDE([Complaints with History], [Total Complaints])
+		formatString: 0.00%
+		displayFolder: History
+		lineageTag: 9ddf0f05-154f-4dd9-a2c2-363e896c3304
+
+	/// So khieu nai tich luy theo nam cua Dim_Date_Complaint theo nam tiep nhan, giu filter lookup. Chi so sanh tich luy; YoY va MoM chua dua vao. Cohort rong tra 0.
+	measure 'Complaints YTD' = COALESCE(TOTALYTD([Total Complaints], Dim_Date_Complaint[Date]), 0)
+		formatString: #,0
+		displayFolder: Time
+		lineageTag: cdd8953e-9b00-4334-b05f-bb8fc0df45f4
+
+	column _marker
+		isHidden
+		lineageTag: 0897fab2-2e02-48d0-acc3-c382a97d1552
+		isNameInferred
+		sourceColumn: [_marker]
+
+	partition Measure = calculated
+		mode: import
+		source = ROW("_marker", "")
+

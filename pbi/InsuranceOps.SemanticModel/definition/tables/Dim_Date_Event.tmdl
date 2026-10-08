@@ -1,0 +1,83 @@
+/// Bảng ngày cho VAI TRÒ ngày event của lịch sử trạng thái. Phạm vi 04/09/2018–15/05/2020 lấy từ ngày hợp lệ thực có trong status_history_curated.csv (StatusDate__iso). Đây là bảng ngày ACTIVE của model (quan hệ tới nó isActive).
+table Dim_Date_Event
+	lineageTag: 220ab7d9-7679-489e-9aef-b351653711e3
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: 4c287d02-9d0a-4e7d-9d5c-1845882a443e
+		dataCategory: Time
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: #,0
+		lineageTag: b4882464-1255-4cc4-8a92-c8ad62e2e981
+		summarizeBy: none
+		sourceColumn: Year
+
+	column YearMonth
+		dataType: string
+		lineageTag: 8d57dded-9b92-4d58-bf4a-e8d96728438e
+		summarizeBy: none
+		sourceColumn: YearMonth
+
+	column Quarter
+		dataType: string
+		lineageTag: 63b301f0-2152-4601-bb5a-769bf12782a6
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column MonthNum
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 20eb9f94-7756-4e1a-aa0d-8f0304757960
+		summarizeBy: none
+		sourceColumn: MonthNum
+
+	column MonthName
+		dataType: string
+		lineageTag: 5084821e-0e9f-405b-8eda-b915cc22b440
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthNum
+
+	column DayOfWeek
+		dataType: string
+		lineageTag: db602018-26d6-483b-be6c-4eae06e44e50
+		summarizeBy: none
+		sourceColumn: DayOfWeek
+		sortByColumn: DayOfWeekNum
+
+	column DayOfWeekNum
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 041e6162-b1c0-4e61-9d34-1a82e9f29242
+		summarizeBy: none
+		sourceColumn: DayOfWeekNum
+
+	partition Dim_Date_Event = m
+		mode: import
+		source =
+				let
+				    NgayDau = #date(2018, 9, 4),
+				    NgayCuoi = #date(2020, 5, 15),
+				    DanhSachNgay = List.Dates(NgayDau, Duration.Days(NgayCuoi - NgayDau) + 1, #duration(1, 0, 0, 0)),
+				    Raw = Table.TransformColumnTypes(Table.FromList(DanhSachNgay, Splitter.SplitByNothing(), {"Date"}), {{"Date", type date}}),
+				    CoNam = Table.AddColumn(Raw, "Year", each Date.Year([Date]), Int64.Type),
+				    CoThang = Table.AddColumn(CoNam, "MonthNum", each Date.Month([Date]), Int64.Type),
+				    CoNamThang = Table.AddColumn(CoThang, "YearMonth", each Date.ToText([Date], "yyyy-MM"), type text),
+				    CoQuy = Table.AddColumn(CoNamThang, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    CoTenThang = Table.AddColumn(CoQuy, "MonthName", each Date.ToText([Date], "MMM", "en-US"), type text),
+				    CoThu = Table.AddColumn(CoTenThang, "DayOfWeek", each Date.ToText([Date], "ddd", "en-US"), type text),
+				    CoSoThu = Table.AddColumn(CoThu, "DayOfWeekNum", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type)
+				in
+				    CoSoThu
+

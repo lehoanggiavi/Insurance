@@ -1,0 +1,156 @@
+/// Dimension vùng. Grain = 1 dòng / 1 id. Tọa độ chuyển sang double ở đây (nguồn là chuỗi, cần kiểm kiểu trước khi dùng tính khoảng cách).
+table Dim_Region
+	lineageTag: 4c2399c9-ec2f-48dd-8a9d-f8f9e3563be9
+
+	column id
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 77969797-16ce-49e6-ae4c-a3dc9c8ea29b
+		summarizeBy: none
+		sourceColumn: id
+
+	column id__source
+		dataType: string
+		isHidden
+		lineageTag: 109ecd51-c4a3-456f-8acc-bf4061e57a4b
+		summarizeBy: none
+		sourceColumn: id__source
+
+	column id__int
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 4cae08b9-4cf8-4f99-b56b-7229a76746ce
+		summarizeBy: none
+		sourceColumn: id__int
+
+	column name
+		dataType: string
+		lineageTag: e6bfbfee-1919-4754-9ffd-77bf821663ef
+		summarizeBy: none
+		sourceColumn: name
+
+	column county
+		dataType: string
+		lineageTag: 41f2e540-b847-4c8b-a0de-dd7439271086
+		summarizeBy: none
+		sourceColumn: county
+
+	column state_code
+		dataType: string
+		lineageTag: def42b86-44eb-46c5-9d31-0932ae00957d
+		summarizeBy: none
+		sourceColumn: state_code
+
+	column state
+		dataType: string
+		lineageTag: bd40c4df-4406-4f19-b8e2-b17e8d017b7a
+		summarizeBy: none
+		sourceColumn: state
+
+	column type
+		dataType: string
+		lineageTag: 7295b4a7-e2ac-4774-b71a-b7a938695b9c
+		summarizeBy: none
+		sourceColumn: type
+
+	column latitude
+		dataType: double
+		formatString: #,0.00
+		lineageTag: eadcaf06-dfd8-465c-be41-edacfead9ced
+		summarizeBy: none
+		sourceColumn: latitude
+
+	column longitude
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e8c5675f-6c6e-4e7f-8275-507abcb59cc9
+		summarizeBy: none
+		sourceColumn: longitude
+
+	column area_code
+		dataType: string
+		lineageTag: 89e9d6bb-56af-44ca-8126-7f4c46f26af6
+		summarizeBy: none
+		sourceColumn: area_code
+
+	column population
+		dataType: int64
+		formatString: #,0
+		lineageTag: c1fb9c61-5083-43f5-b42c-50ba975d31a7
+		summarizeBy: none
+		sourceColumn: population
+
+		annotation SummarizationSetBy = Automatic
+
+	column households
+		dataType: int64
+		formatString: #,0
+		lineageTag: b435a651-760e-4f9c-b254-b55eac77d447
+		summarizeBy: none
+		sourceColumn: households
+
+		annotation SummarizationSetBy = Automatic
+
+	column median_income
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 1ee407cd-0d31-4557-904d-eb5b8a81f36e
+		summarizeBy: none
+		sourceColumn: median_income
+
+	column land_area
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 87f340aa-63cb-46f7-8821-12051e47b182
+		summarizeBy: none
+		sourceColumn: land_area
+
+		annotation SummarizationSetBy = Automatic
+
+	column water_area
+		dataType: double
+		formatString: #,0.00
+		lineageTag: bf6921d4-8f3a-474f-a84f-d5022279ade8
+		summarizeBy: none
+		sourceColumn: water_area
+
+		annotation SummarizationSetBy = Automatic
+
+	column time_zone
+		dataType: string
+		lineageTag: ad6f5238-fdf7-4b25-91b2-a84fa80d5845
+		summarizeBy: none
+		sourceColumn: time_zone
+
+	partition Dim_Region = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\regions_curated.csv"), [Delimiter = ",", Columns = 17, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"id__int", "latitude", "longitude", "population", "households", "median_income", "land_area", "water_area"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"id", Int64.Type},
+					        {"id__source", type text},
+					        {"id__int", Int64.Type},
+					        {"name", type text},
+					        {"county", type text},
+					        {"state_code", type text},
+					        {"state", type text},
+					        {"type", type text},
+					        {"latitude", type number},
+					        {"longitude", type number},
+					        {"area_code", type text},
+					        {"population", Int64.Type},
+					        {"households", Int64.Type},
+					        {"median_income", type number},
+					        {"land_area", type number},
+					        {"water_area", type number},
+					        {"time_zone", type text}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"id", Order.Ascending})
+				in
+				    Sorted
+

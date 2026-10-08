@@ -1,0 +1,217 @@
+/// Bang fact khiếu nại. Grain = 1 dòng / 1 ComplaintID. Nguyên bản từ complaints_curated.csv.
+table Fact_Complaint
+	lineageTag: e7bbad50-b25a-4ced-b2f4-3cd16a5b49af
+
+	column ComplaintID
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 8a3a3e2b-3cf1-4a26-9fd2-0bb254381456
+		summarizeBy: none
+		sourceColumn: ComplaintID
+
+	column ComplaintID__source
+		dataType: string
+		isHidden
+		lineageTag: c8d1e280-6c5f-4386-87c7-3fa32fb32b49
+		summarizeBy: none
+		sourceColumn: ComplaintID__source
+
+	column ComplaintID__int
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 2c59bae9-0934-4986-9b6b-8200b61fc38e
+		summarizeBy: none
+		sourceColumn: ComplaintID__int
+
+	column ComplainDate__iso
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 44fa90d9-5ffe-4729-85ec-93cfa40bd7b1
+		summarizeBy: none
+		sourceColumn: ComplainDate__iso
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CompletionDate__iso
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: e7e54759-39ad-476c-aa60-3dab545d8be9
+		summarizeBy: none
+		sourceColumn: CompletionDate__iso
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CompletionDate__source_kind
+		dataType: string
+		lineageTag: e68bc1ee-1b7d-49b8-a1d0-ff1067ea9593
+		summarizeBy: none
+		sourceColumn: CompletionDate__source_kind
+
+	column CustomerID
+		dataType: int64
+		formatString: #,0
+		lineageTag: b9883b5e-e915-4213-b8da-54ef959d28fb
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+	column BrokerID
+		dataType: int64
+		formatString: #,0
+		lineageTag: 33b40fe1-a2d3-4f0d-b5a9-5507a16c8a56
+		summarizeBy: none
+		sourceColumn: BrokerID
+
+	column ProductID
+		dataType: int64
+		formatString: #,0
+		lineageTag: da5a99ac-1c9b-42d1-9e81-d5f64c71140a
+		summarizeBy: none
+		sourceColumn: ProductID
+
+	column ComplainPriorityID
+		dataType: int64
+		formatString: #,0
+		lineageTag: d5acb321-5705-471d-bed1-5d3ff1cb7d98
+		summarizeBy: none
+		sourceColumn: ComplainPriorityID
+
+	column ComplainTypeID
+		dataType: int64
+		formatString: #,0
+		lineageTag: 120dfbf5-4527-426d-820b-7c5f9506a861
+		summarizeBy: none
+		sourceColumn: ComplainTypeID
+
+	column ComplainSourceID
+		dataType: int64
+		formatString: #,0
+		lineageTag: e19703c3-9570-4381-b930-fdeeb3182abe
+		summarizeBy: none
+		sourceColumn: ComplainSourceID
+
+	column ComplainCategoryID
+		dataType: int64
+		formatString: #,0
+		lineageTag: b54253b0-2e72-4100-853b-b3ab9913d2a8
+		summarizeBy: none
+		sourceColumn: ComplainCategoryID
+
+	column ComplainStatusID
+		dataType: int64
+		formatString: #,0
+		lineageTag: ab11811e-b2dd-4e24-aaec-2013a276a52e
+		summarizeBy: none
+		sourceColumn: ComplainStatusID
+
+	column ComplainStatus
+		dataType: string
+		lineageTag: 4dd8140b-3213-4242-82c8-3ff107406289
+		summarizeBy: none
+		sourceColumn: ComplainStatus
+
+	column AdministratorID
+		dataType: int64
+		formatString: #,0
+		lineageTag: 2d90b1d5-3f1d-4aec-8702-7c482127252a
+		summarizeBy: none
+		sourceColumn: AdministratorID
+
+	column ClientSatisfaction
+		dataType: string
+		lineageTag: a125d18c-8bfc-412f-b892-a8d6504b76b4
+		summarizeBy: none
+		sourceColumn: ClientSatisfaction
+
+	column ExpectedReimbursement
+		dataType: double
+		formatString: #,0.00
+		lineageTag: f6374cc3-32e1-418c-9f48-8befffdbfc56
+		summarizeBy: sum
+		sourceColumn: ExpectedReimbursement
+
+	column processing_days
+		dataType: int64
+		formatString: #,0
+		lineageTag: a98d5f5c-15b2-4c0a-adc7-94c5797c83e3
+		summarizeBy: none
+		sourceColumn: processing_days
+
+	column age_at_complaint
+		dataType: int64
+		formatString: #,0
+		lineageTag: 94481932-f96e-4d1b-9b0b-95d30b515a14
+		summarizeBy: none
+		sourceColumn: age_at_complaint
+
+	column age_bucket
+		dataType: string
+		lineageTag: d9601186-aabf-4d6a-bfd8-86ec2c311e13
+		summarizeBy: none
+		sourceColumn: age_bucket
+
+	column completion_null_flag
+		dataType: boolean
+		lineageTag: 83ccb8da-f97d-46c7-b3c5-e108a43c3077
+		summarizeBy: none
+		sourceColumn: completion_null_flag
+
+	column category_inactive_flag
+		dataType: boolean
+		lineageTag: cf0416f2-ce9b-402d-8698-143845cb2c46
+		summarizeBy: none
+		sourceColumn: category_inactive_flag
+
+	column quality_flags
+		dataType: string
+		lineageTag: 8f3328aa-aaab-4bda-b895-7a35cf10d54e
+		summarizeBy: none
+		sourceColumn: quality_flags
+
+	column _source_row
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 9f861084-3942-4bac-9248-48cbd874f00b
+		summarizeBy: none
+		sourceColumn: _source_row
+
+	partition Fact_Complaint = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\complaints_curated.csv"), [Delimiter = ",", Columns = 25, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"ComplaintID__int", "ComplainDate__iso", "CompletionDate__iso", "CustomerID", "BrokerID", "ProductID", "ComplainPriorityID", "ComplainTypeID", "ComplainSourceID", "ComplainCategoryID", "ComplainStatusID", "AdministratorID", "ExpectedReimbursement", "processing_days", "age_at_complaint", "_source_row"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"ComplaintID", Int64.Type},
+					        {"ComplaintID__source", type text},
+					        {"ComplaintID__int", Int64.Type},
+					        {"ComplainDate__iso", type date},
+					        {"CompletionDate__iso", type date},
+					        {"CompletionDate__source_kind", type text},
+					        {"CustomerID", Int64.Type},
+					        {"BrokerID", Int64.Type},
+					        {"ProductID", Int64.Type},
+					        {"ComplainPriorityID", Int64.Type},
+					        {"ComplainTypeID", Int64.Type},
+					        {"ComplainSourceID", Int64.Type},
+					        {"ComplainCategoryID", Int64.Type},
+					        {"ComplainStatusID", Int64.Type},
+					        {"ComplainStatus", type text},
+					        {"AdministratorID", Int64.Type},
+					        {"ClientSatisfaction", type text},
+					        {"ExpectedReimbursement", type number},
+					        {"processing_days", Int64.Type},
+					        {"age_at_complaint", Int64.Type},
+					        {"age_bucket", type text},
+					        {"completion_null_flag", type logical},
+					        {"category_inactive_flag", type logical},
+					        {"quality_flags", type text},
+					        {"_source_row", Int64.Type}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"ComplaintID", Order.Ascending})
+				in
+				    Sorted
+

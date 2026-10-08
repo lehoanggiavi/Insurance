@@ -1,0 +1,91 @@
+/// Bang fact lịch sử trạng thái. Grain = 1 dòng / 1 EventID. Giữ MỌI event, không chọn latest, không tie-break; cờ ambiguity đi kèm từng dòng.
+table Fact_StatusHistory
+	lineageTag: 059104cf-37c2-4287-83e1-08797db47a52
+
+	column EventID
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 20e5d180-56b5-4a5b-bc3e-0b6c6c55e158
+		summarizeBy: none
+		sourceColumn: EventID
+
+	column EventID__int
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 86586f4c-d140-4ee5-b60c-991fd9b340d2
+		summarizeBy: none
+		sourceColumn: EventID__int
+
+	column ComplaintID
+		dataType: int64
+		formatString: #,0
+		lineageTag: cf1a7be8-ff28-43bf-998a-08c509d10afc
+		summarizeBy: none
+		sourceColumn: ComplaintID
+
+	column ComplaintStatusID
+		dataType: int64
+		formatString: #,0
+		lineageTag: cd8b49f1-e43a-4595-8b34-194f9ff1a314
+		summarizeBy: none
+		sourceColumn: ComplaintStatusID
+
+	column StatusDate__iso
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 6b5c542e-803e-4106-a589-b97985f0c222
+		summarizeBy: none
+		sourceColumn: StatusDate__iso
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column event_after_cutoff_flag
+		dataType: boolean
+		lineageTag: f64fda38-95eb-4023-a4ce-1d97d1114742
+		summarizeBy: none
+		sourceColumn: event_after_cutoff_flag
+
+	column complaint_latest_ambiguous_flag
+		dataType: boolean
+		lineageTag: 8d5c5c13-1c63-4654-b84d-80b3ea577ff5
+		summarizeBy: none
+		sourceColumn: complaint_latest_ambiguous_flag
+
+	column quality_flags
+		dataType: string
+		lineageTag: 6dc3772f-e990-4a76-a957-f25142dc8908
+		summarizeBy: none
+		sourceColumn: quality_flags
+
+	column _source_row
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 69294028-ab98-48df-8d81-a09656461c25
+		summarizeBy: none
+		sourceColumn: _source_row
+
+	partition Fact_StatusHistory = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\status_history_curated.csv"), [Delimiter = ",", Columns = 9, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"EventID__int", "ComplaintID", "ComplaintStatusID", "StatusDate__iso", "_source_row"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"EventID", Int64.Type},
+					        {"EventID__int", Int64.Type},
+					        {"ComplaintID", Int64.Type},
+					        {"ComplaintStatusID", Int64.Type},
+					        {"StatusDate__iso", type date},
+					        {"event_after_cutoff_flag", type logical},
+					        {"complaint_latest_ambiguous_flag", type logical},
+					        {"quality_flags", type text},
+					        {"_source_row", Int64.Type}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"EventID", Order.Ascending})
+				in
+				    Sorted
+

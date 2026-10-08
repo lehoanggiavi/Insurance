@@ -1,0 +1,66 @@
+relationship Fact_Complaint_to_Dim_Customer
+	fromColumn: Fact_Complaint.CustomerID
+	toColumn: Dim_Customer.CustomerID
+
+relationship Fact_Complaint_to_Dim_Broker
+	fromColumn: Fact_Complaint.BrokerID
+	toColumn: Dim_Broker.BrokerID
+
+relationship Fact_Complaint_to_Dim_Product
+	fromColumn: Fact_Complaint.ProductID
+	toColumn: Dim_Product.ProductID
+
+relationship Fact_Complaint_to_Dim_Priority
+	fromColumn: Fact_Complaint.ComplainPriorityID
+	toColumn: Dim_Priority.ID
+
+relationship Fact_Complaint_to_Dim_Category
+	fromColumn: Fact_Complaint.ComplainCategoryID
+	toColumn: Dim_Category.ID
+
+relationship Fact_Complaint_to_Dim_Source
+	fromColumn: Fact_Complaint.ComplainSourceID
+	toColumn: Dim_Source.ID
+
+relationship Fact_Complaint_to_Dim_Type
+	fromColumn: Fact_Complaint.ComplainTypeID
+	toColumn: Dim_Type.ID
+
+relationship Fact_Complaint_to_Dim_ComplaintStatus
+	fromColumn: Fact_Complaint.ComplainStatusID
+	toColumn: Dim_ComplaintStatus.ID
+
+relationship Fact_Complaint_to_Dim_Date_Complaint
+	fromColumn: Fact_Complaint.ComplainDate__iso
+	toColumn: Dim_Date_Complaint.Date
+
+relationship Fact_Complaint_to_Dim_Date_Completion
+	isActive: false
+	fromColumn: Fact_Complaint.CompletionDate__iso
+	toColumn: Dim_Date_Complaint.Date
+
+relationship Fact_StatusHistory_to_Fact_Complaint
+	fromColumn: Fact_StatusHistory.ComplaintID
+	toColumn: Fact_Complaint.ComplaintID
+
+relationship Fact_StatusHistory_to_Dim_EventStatus
+	fromColumn: Fact_StatusHistory.ComplaintStatusID
+	toColumn: Dim_EventStatus.ID
+
+relationship Fact_StatusHistory_to_Dim_Date_Event
+	fromColumn: Fact_StatusHistory.StatusDate__iso
+	toColumn: Dim_Date_Event.Date
+
+relationship Dim_Customer_to_Dim_Region
+	fromColumn: Dim_Customer.RegionID
+	toColumn: Dim_Region.id
+
+relationship 6546f24c-f9c5-4af9-af28-dfe002568bb7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dim_Customer.BirthDate__iso
+	toColumn: LocalDateTable_a888673f-e8f9-4cef-8d63-eb7c13fc6d57.Date
+
+relationship Dim_Region_to_Dim_StateRegion
+	fromColumn: Dim_Region.state_code
+	toColumn: Dim_StateRegion.'State Code__source'
+

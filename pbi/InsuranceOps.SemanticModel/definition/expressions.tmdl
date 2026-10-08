@@ -1,0 +1,6 @@
+/// Điểm duy nhất để đổi đường dẫn nguồn sau khi clone. Sửa 1 giá trị này rồi Refresh.
+expression 'Data Folder' = "E:\Practice_DSEA\DA\OpenSrcDA\Insurance\data\curated" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: c3728c66-db44-4c16-bb47-025f4590553a
+
+	annotation PBI_ResultType = Text
+

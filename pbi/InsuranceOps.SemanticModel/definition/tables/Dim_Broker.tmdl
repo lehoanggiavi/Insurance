@@ -1,0 +1,71 @@
+/// Dimension môi giới. Grain = 1 dòng / 1 BrokerID.
+table Dim_Broker
+	lineageTag: d7e6a3a8-91ff-4eb6-b4f9-a1d7cc1cfef0
+
+	column BrokerID
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 37f7de63-ad0e-4f31-b8e5-6bc903845a01
+		summarizeBy: none
+		sourceColumn: BrokerID
+
+	column BrokerID__source
+		dataType: string
+		isHidden
+		lineageTag: 734fa66d-b9ae-44d9-a129-e21472db302c
+		summarizeBy: none
+		sourceColumn: BrokerID__source
+
+	column BrokerID__int
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 68d301ad-5d79-418d-8ab8-5bd8d5d1e731
+		summarizeBy: none
+		sourceColumn: BrokerID__int
+
+	column BrokerCode
+		dataType: string
+		lineageTag: 169ddcac-7083-4509-a565-f1aa00888e6f
+		summarizeBy: none
+		sourceColumn: BrokerCode
+
+	column DistributionNetwork
+		dataType: string
+		lineageTag: c51d7c66-aed3-475e-b523-626eb2940ee0
+		summarizeBy: none
+		sourceColumn: DistributionNetwork
+
+	column DistributionChannel
+		dataType: string
+		lineageTag: bb1f31b8-08e3-45f6-b608-18276479c54f
+		summarizeBy: none
+		sourceColumn: DistributionChannel
+
+	column CommissionScheme
+		dataType: string
+		lineageTag: 80a4ba47-8b83-4633-a0ae-40d067ea0063
+		summarizeBy: none
+		sourceColumn: CommissionScheme
+
+	partition Dim_Broker = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\brokers_curated.csv"), [Delimiter = ",", Columns = 7, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"BrokerID__int"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"BrokerID", Int64.Type},
+					        {"BrokerID__source", type text},
+					        {"BrokerID__int", Int64.Type},
+					        {"BrokerCode", type text},
+					        {"DistributionNetwork", type text},
+					        {"DistributionChannel", type text},
+					        {"CommissionScheme", type text}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"BrokerID", Order.Ascending})
+				in
+				    Sorted
+

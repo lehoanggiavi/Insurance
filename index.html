@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InsuranceOps — Phân tích khiếu nại bảo hiểm | Le Hoang Gia Vi</title>
+<meta name="description" content="Phân tích 13.846 khiếu nại bảo hiểm: thời gian xử lý, đánh giá khách hàng, độ phủ lịch sử và đề xuất vận hành. Python · Power BI · DAX.">
+<style>
+:root{--ink:#173341;--muted:#51636c;--accent:#087f82;--paper:#f5f8f7;--line:#d1dedc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,sans-serif}a{color:var(--accent);text-underline-offset:4px}a:hover{text-decoration-thickness:2px}a:focus-visible{outline:3px solid #d58a25;outline-offset:4px}header,main,footer{width:min(1180px,calc(100% - 40px));margin:auto}nav{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}nav strong{margin-right:auto}h1{font-size:clamp(30px,4vw,54px);line-height:1.12;letter-spacing:-.03em;max-width:880px;margin:18px 0}h2{font-size:28px;line-height:1.3;margin:0 0 16px}h3{font-size:18px;margin:0 0 6px}p{margin:0 0 16px}.intro{padding:42px 0 24px}.eyebrow{color:var(--accent);font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}.lede{max-width:820px;color:var(--muted);font-size:18px}.actions{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}.button{display:inline-block;padding:10px 18px;border:1px solid var(--accent);border-radius:4px;text-decoration:none;font-weight:650}.primary{background:var(--accent);color:white}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line);margin:12px 0 38px}.metric{padding:22px 18px 22px 0}.metric+.metric{padding-left:20px;border-left:1px solid var(--line)}.metric strong{font-size:32px;display:block;font-variant-numeric:tabular-nums;line-height:1.3}.metric span{display:block;color:var(--muted);font-size:14px}section{padding:18px 0 28px;scroll-margin-top:20px}.findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}.findings article{border-top:3px solid var(--accent);padding-top:16px}.findings p{color:var(--muted)}.recommendation{color:var(--ink)!important}figure{margin:24px 0 36px}figure img{width:100%;height:auto;display:block;border:1px solid var(--line);background:#03212c}figcaption{font-size:14px;color:var(--muted);margin-top:10px}.notes{border-left:4px solid #d58a25;padding:18px 24px;background:#fff9ee}.notes ul{margin:10px 0 0;padding-left:20px}footer{padding:28px 0 38px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer a{margin-left:12px}
+@media(max-width:760px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:nth-child(3){border-left:0;padding-left:0}.metric:nth-child(n+3){border-top:1px solid var(--line)}.findings{grid-template-columns:1fr;gap:20px}.intro{padding-top:30px}.metric strong{font-size:28px}h2{font-size:24px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><nav aria-label="Điều hướng"><strong>InsuranceOps</strong><a href="#insights">Phát hiện</a><a href="#dashboards">Dashboard</a><a href="reports/project_report/InsuranceOps_Project_Report.pdf">Báo cáo PDF</a><a href="https://lehoanggiavi.github.io/portfolio/?role=da">Portfolio</a></nav></header>
+<main>
+<section class="intro">
+<p class="eyebrow">Data Analytics · Python · Power BI · DAX</p>
+<h1>Hiểu điểm nghẽn trong xử lý khiếu nại bảo hiểm.</h1>
+<p class="lede">Từ 13.846 hồ sơ, tìm nhóm cần xem kỹ hơn, đọc mức hài lòng cùng độ phủ đánh giá và đề xuất cách cải thiện có đo lường.</p>
+<div class="actions"><a class="button primary" href="reports/project_report/InsuranceOps_Project_Report.pdf">Đọc báo cáo 13 trang</a><a class="button" href="https://github.com/lehoanggiavi/Insurance">Xem mã nguồn</a></div>
+</section>
+<div class="metrics" aria-label="Các chỉ số chính">
+<div class="metric"><strong>13.846</strong><span>Hồ sơ khiếu nại</span><span>Số hồ sơ, không phải số khách</span></div>
+<div class="metric"><strong>12,85 ngày</strong><span>Thời gian xử lý trung bình</span><span>Trung vị: 7 ngày · ca có ngày hoàn tất</span></div>
+<div class="metric"><strong>89,33%</strong><span>Hài lòng trong ca có đánh giá</span><span>Độ phủ đánh giá: 55,52%</span></div>
+<div class="metric"><strong>31,42%</strong><span>Có lịch sử trạng thái</span><span>Có ít nhất một sự kiện được ghi</span></div>
+</div>
+<section id="insights"><h2>Các con số dẫn tới hành động nào?</h2>
+<div class="findings">
+<article><h3>Rà các ca xử lý kéo dài</h3><p>Trung bình 12,85 ngày cao hơn trung vị 7 ngày cho thấy các ca dài ảnh hưởng đến số bình quân. Nhóm ưu tiên xử lý lâu hơn trong mẫu chưa chứng minh nguyên nhân.</p><p class="recommendation"><strong>Đề xuất:</strong> rà nhóm ưu tiên và nguồn CRO, đối chiếu loại hồ sơ trước khi thử thay đổi quy trình; theo dõi cả trung bình và trung vị trên cùng phạm vi.</p></article>
+<article><h3>Đọc mức hài lòng cùng độ phủ</h3><p>6.867/7.687 hồ sơ có đánh giá thể hiện hài lòng. Nhưng 6.159 hồ sơ chưa có đánh giá, nên 89,33% không đại diện cho toàn bộ 13.846 hồ sơ.</p><p class="recommendation"><strong>Đề xuất:</strong> theo dõi tỷ lệ có đánh giá theo nhóm và cải thiện thu thập phản hồi trước khi so sánh chất lượng phục vụ.</p></article>
+<article><h3>Bổ sung dấu vết xử lý</h3><p>Chỉ 4.351 hồ sơ có sự kiện lịch sử trạng thái; có lịch sử chưa có nghĩa là lịch sử đầy đủ. Chưa đo đáng tin thời gian ở từng trạng thái.</p><p class="recommendation"><strong>Đề xuất:</strong> chuẩn hóa ghi nhận chuyển trạng thái và kiểm độ phủ, rồi mới dùng chỉ số thời gian theo bước để tìm điểm nghẽn.</p></article>
+</div></section>
+<section id="dashboards"><h2>Dashboard Power BI</h2><p>Hai trang hỗ trợ xem tổng quan và tìm nhóm hồ sơ cần rà. Mở ảnh để xem đầy đủ các chỉ số.</p>
+<figure><a href="reports/phase5/supervisor/after_reopen/Executive%20Summary.png" target="_blank" rel="noopener"><img src="reports/phase5/supervisor/after_reopen/Executive%20Summary.png" width="2833" height="1465" alt="Dashboard Tổng quan: số khiếu nại, thời gian xử lý, mức hài lòng và phân tích theo sản phẩm, bang"></a><figcaption>Tổng quan — lượng khiếu nại, thời gian xử lý và phản hồi khách hàng.</figcaption></figure>
+<figure><a href="reports/phase5/supervisor/after_reopen/Operation%20Drill-down.png" target="_blank" rel="noopener"><img src="reports/phase5/supervisor/after_reopen/Operation%20Drill-down.png" loading="lazy" width="2833" height="1465" alt="Dashboard Vận hành: phân tích khiếu nại theo nguồn tiếp nhận, mức ưu tiên và loại hồ sơ"></a><figcaption>Vận hành — đối chiếu nguồn tiếp nhận, mức ưu tiên và loại hồ sơ.</figcaption></figure>
+<p><a href="pbi/InsuranceOps.pbip">File Power BI PBIP</a> · <a href="https://github.com/lehoanggiavi/Insurance#mở-dashboard">Hướng dẫn mở và dữ liệu cần có</a></p>
+</section>
+<section class="notes"><h2>Phạm vi và giới hạn</h2><ul><li>50 hồ sơ thiếu ngày hoàn tất chưa tự chứng minh tồn đọng tại một ngày cụ thể.</li><li>Giá trị yêu cầu chưa có đơn vị tiền được xác nhận; các liên hệ mô tả chưa chứng minh nguyên nhân hay hiệu quả cải thiện.</li><li>Website hiển thị ảnh dashboard và báo cáo. Để dùng bộ lọc tương tác, mở file Power BI với dữ liệu của workspace gốc.</li></ul></section>
+</main>
+<footer>Le Hoang Gia Vi · Data Analyst <a href="https://lehoanggiavi.github.io/portfolio/?role=da">Portfolio</a><a href="https://github.com/lehoanggiavi/Insurance">GitHub</a></footer>
+</body></html>

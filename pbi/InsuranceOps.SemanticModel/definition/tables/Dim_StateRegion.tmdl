@@ -1,0 +1,48 @@
+/// Dimension vùng theo bang. Grain = 1 dòng / 1 State Code (khoá CHUỖI, vì mã bang không phải số).
+table Dim_StateRegion
+	lineageTag: 08b26068-f44e-474d-a7b7-1b57e4b7ef19
+
+	column State
+		dataType: string
+		lineageTag: bffe137d-05ec-45ee-b85c-95d5caa050c5
+		summarizeBy: none
+		sourceColumn: State
+
+	column Region
+		dataType: string
+		lineageTag: d51edfaf-d625-442f-9385-30bab2125c1a
+		summarizeBy: none
+		sourceColumn: Region
+
+	column 'State Code__source'
+		dataType: string
+		lineageTag: 5dda2812-6b25-4251-b74e-a07c4dfcd54f
+		summarizeBy: none
+		sourceColumn: State Code__source
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'State Code__int'
+		dataType: string
+		lineageTag: c5d9f11c-540d-447a-8e9a-ed8eb27d4276
+		summarizeBy: none
+		sourceColumn: State Code__int
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_StateRegion = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\state_regions_curated.csv"), [Delimiter = ",", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(PromotedHeaders, {
+				        {"State Code__source", type text},
+					        {"State Code__int", type text},
+					        {"State", type text},
+					        {"Region", type text}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"State Code__source", Order.Ascending})
+				in
+				    Sorted
+

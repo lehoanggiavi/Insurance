@@ -1,0 +1,35 @@
+model InsuranceOps
+	culture: vi-VN
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: vi-VN
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Fact_Complaint","Fact_StatusHistory","Dim_Customer","Dim_Broker","Dim_Product","Dim_Region","Dim_StateRegion","Dim_Priority","Dim_Category","Dim_Source","Dim_Type","Dim_ComplaintStatus","Dim_EventStatus","Dim_Date_Complaint","Dim_Date_Event","Data Folder"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+ref table Fact_Complaint
+ref table Fact_StatusHistory
+ref table Dim_Customer
+ref table Dim_Broker
+ref table Dim_Product
+ref table Dim_Region
+ref table Dim_StateRegion
+ref table Dim_Priority
+ref table Dim_Category
+ref table Dim_Source
+ref table Dim_Type
+ref table Dim_ComplaintStatus
+ref table Dim_EventStatus
+ref table Dim_Date_Complaint
+ref table Dim_Date_Event
+ref table DateTableTemplate_cf8fe92d-49dc-4516-8b8f-b8847663eee3
+ref table LocalDateTable_a888673f-e8f9-4cef-8d63-eb7c13fc6d57
+ref table Measure
+
+ref cultureInfo vi-VN
+

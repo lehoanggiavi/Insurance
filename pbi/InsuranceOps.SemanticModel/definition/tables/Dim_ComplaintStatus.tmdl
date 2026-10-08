@@ -1,0 +1,50 @@
+/// Lookup trạng thái theo VAI TRÒ CỦA COMPLAINT (ComplainStatusID ở Fact_Complaint). Tách riêng với Dim_EventStatus để không có hai đường lọc active tới history.
+table Dim_ComplaintStatus
+	lineageTag: 5c35430a-2aca-491d-a12f-cad69c312508
+
+	column ID
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 1823ce7a-c3bd-4d70-84f4-fde302ccd902
+		summarizeBy: none
+		sourceColumn: ID
+
+	column ID__source
+		dataType: string
+		isHidden
+		lineageTag: 9d1fbe00-6ada-43d7-bc5b-745035f77255
+		summarizeBy: none
+		sourceColumn: ID__source
+
+	column ID__int
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 185a45a3-f713-4df4-8a30-a4fd79e44971
+		summarizeBy: none
+		sourceColumn: ID__int
+
+	column Description
+		dataType: string
+		lineageTag: fecff559-6536-4eb8-8ffd-eb1c1b258e37
+		summarizeBy: none
+		sourceColumn: Description
+
+	partition Dim_ComplaintStatus = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\statuses_curated.csv"), [Delimiter = ",", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"ID__int"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"ID", Int64.Type},
+					        {"ID__source", type text},
+					        {"ID__int", Int64.Type},
+					        {"Description", type text}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"ID", Order.Ascending})
+				in
+				    Sorted
+

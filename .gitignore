@@ -1,0 +1,26 @@
+# Private input and local coordination state
+/data/
+/Log/
+/Plan/
+/AGENTS.md
+/CLAUDE.md
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+.env
+.env.*
+**/.pbi/cache.abf
+**/.pbi/localSettings.json
+~$*
+*.bak*
+*.aux
+*.log
+*.out
+*.synctex.gz
+# Publish aggregate figures and the saved dashboard images
+/reports/profile/*.json
+/reports/phase5/*
+!/reports/phase5/supervisor/
+/reports/phase5/supervisor/*
+!/reports/phase5/supervisor/after_reopen/

@@ -1,0 +1,50 @@
+/// Dimension độ ưu tiên khiếu nại.
+table Dim_Priority
+	lineageTag: 6e5f929e-ab38-4bcf-84c4-72c5ed40eb1a
+
+	column ID
+		dataType: int64
+		isKey
+		formatString: #,0
+		lineageTag: 6ea9c992-9957-4848-9177-ae4b97eab6d8
+		summarizeBy: none
+		sourceColumn: ID
+
+	column ID__source
+		dataType: string
+		isHidden
+		lineageTag: 72013d9c-a781-4b13-9bb2-0052fe4e5d92
+		summarizeBy: none
+		sourceColumn: ID__source
+
+	column ID__int
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 23f49f9e-8d67-4530-958d-57dc89881277
+		summarizeBy: none
+		sourceColumn: ID__int
+
+	column Description
+		dataType: string
+		lineageTag: 82c264f8-03cc-48bd-a791-90465af02598
+		summarizeBy: none
+		sourceColumn: Description
+
+	partition Dim_Priority = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "\priorities_curated.csv"), [Delimiter = ",", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    RongThanhNull = Table.ReplaceValue(PromotedHeaders, "", null, Replacer.ReplaceValue, {"ID__int"}),
+				    Typed = Table.TransformColumnTypes(RongThanhNull, {
+				        {"ID", Int64.Type},
+					        {"ID__source", type text},
+					        {"ID__int", Int64.Type},
+					        {"Description", type text}
+				    }, "en-US"),
+				    Sorted = Table.Sort(Typed, {"ID", Order.Ascending})
+				in
+				    Sorted
+
